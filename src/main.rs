@@ -1,6 +1,5 @@
 mod command;
 
-use command::Command;
 use std::io::{self, Write};
 
 fn main() {
@@ -11,7 +10,7 @@ fn main() {
         let mut input = String::new();
         io::stdin().read_line(&mut input).unwrap();
 
-        let command: Command = input.parse().unwrap();
+        let command = command::parse(&input);
         command.run();
     }
 }

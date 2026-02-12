@@ -1,57 +1,32 @@
 use std::fmt;
-use std::str::FromStr;
 
-mod run;
-use run::{echo, exit, handle_unknown_command, type_command};
+mod echo;
+mod exit;
+mod type_cmd;
+mod unknown;
 
-pub enum Command {
-    Echo(String),
-    Type(String),
-    Exit,
-    Unknown(String),
-}
-
-impl Command {
-    pub fn name(&self) -> &str {
-        match self {
-            Command::Echo(_) => "echo",
-            Command::Type(_) => "type",
-            Command::Exit => "exit",
-            Command::Unknown(cmd) => cmd,
-        }
-    }
-
-    pub fn run(&self) {
-        match self {
-            Command::Echo(text) => echo(text),
-            Command::Type(text) => type_command(&text.parse().unwrap()),
-            Command::Exit => exit(),
-            Command::Unknown(cmd) => handle_unknown_command(cmd),
-        }
+pub trait Command: fmt::Display {
+    fn name(&self) -> &str;
+    fn run(&self);
+    fn is_builtin(&self) -> bool {
+        true
     }
 }
 
-impl fmt::Display for Command {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let name = self.name();
-        write!(f, "{}", name)
+pub fn parse(input: &str) -> Box<dyn Command> {
+    let parts: Vec<&str> = input.trim().split_whitespace().collect();
+    if parts.is_empty() {
+        return Box::new(unknown::Unknown {
+            name: String::new(),
+        });
     }
-}
-
-impl FromStr for Command {
-    type Err = std::convert::Infallible;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let parts: Vec<&str> = s.trim().split_whitespace().collect();
-        if parts.is_empty() {
-            return Ok(Command::Unknown(String::new()));
-        }
-        let args = parts[1..].join(" ");
-        Ok(match parts[0] {
-            "echo" => Command::Echo(args),
-            "type" => Command::Type(args),
-            "exit" => Command::Exit,
-            other => Command::Unknown(other.to_string()),
-        })
+    let args = parts[1..].join(" ");
+    match parts[0] {
+        "echo" => Box::new(echo::Echo { text: args }),
+        "type" => Box::new(type_cmd::TypeCmd { args }),
+        "exit" => Box::new(exit::Exit),
+        other => Box::new(unknown::Unknown {
+            name: other.to_string(),
+        }),
     }
 }
