@@ -1,8 +1,6 @@
 use std::fmt;
-use std::os::unix::fs::PermissionsExt;
-use std::path::Path;
 
-use super::{parse, Command};
+use super::{parse, Command, find_in_path};
 
 pub struct TypeCmd {
     pub args: String,
@@ -23,19 +21,6 @@ impl Command for TypeCmd {
             println!("{}: not found", command);
         }
     }
-}
-
-fn find_in_path(arg: &str) -> Option<String> {
-    let path_var = std::env::var("PATH").ok()?;
-    for dir in path_var.split(':') {
-        let full_path = Path::new(dir).join(arg);
-        if let Ok(metadata) = full_path.metadata() {
-            if metadata.is_file() && (metadata.permissions().mode() & 0o111 != 0) {
-                return Some(full_path.to_string_lossy().into_owned());
-            }
-        }
-    }
-    None
 }
 
 impl fmt::Display for TypeCmd {
