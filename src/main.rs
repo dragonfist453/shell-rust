@@ -49,10 +49,10 @@ fn execute_command(command: &Command) {
     match command {
         Command::Echo(text) => println!("{}", text),
         Command::Type(text) => match parse_command(text) {
-            Command::Unknown(cmd) => println!("{}: not found", cmd),
+            Command::Unknown(cmd) => execute_command(&Command::Unknown(cmd)),
             other => println!("{} is a shell builtin", other),
         },
         Command::Exit => std::process::exit(0),
-        Command::Unknown(cmd) => println!("Unknown command: {}", cmd),
+        Command::Unknown(cmd) => println!("{}: not found", cmd),
     }
 }
