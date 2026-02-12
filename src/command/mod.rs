@@ -43,7 +43,7 @@ pub fn parse(input: &str) -> Box<dyn Command> {
         "exit" => Box::new(exit::Exit),
         other => {
             if let Some(path) = find_in_path(other) {
-                Box::new(external_cmd::ExternalCmd { path, args })
+                Box::new(external_cmd::ExternalCmd { cmd_name: other.to_string(), path, args })
             } else {
                 Box::new(unknown::Unknown {
                     name: other.to_string(),

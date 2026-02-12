@@ -1,8 +1,9 @@
-use std::{fmt, process};
+use std::{fmt, process, os::unix::process::CommandExt};
 
 use super::Command;
 
 pub struct ExternalCmd {
+    pub cmd_name: String,
     pub path: String,
     pub args: String,
 }
@@ -14,6 +15,7 @@ impl Command for ExternalCmd {
 
     fn run(&self) {
         let result = process::Command::new(&self.path)
+            .arg0(&self.cmd_name)
             .args(self.args.split_whitespace())
             .status();
 
