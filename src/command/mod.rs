@@ -7,6 +7,7 @@ mod exit;
 mod external_cmd;
 mod type_cmd;
 mod unknown;
+mod pwd;
 
 pub trait Command: fmt::Display {
     fn name(&self) -> &str;
@@ -41,6 +42,7 @@ pub fn parse(input: &str) -> Box<dyn Command> {
         "echo" => Box::new(echo::Echo { text: args }),
         "type" => Box::new(type_cmd::TypeCmd { args }),
         "exit" => Box::new(exit::Exit),
+        "pwd" => Box::new(pwd::Pwd),
         other => {
             if let Some(path) = find_in_path(other) {
                 Box::new(external_cmd::ExternalCmd { cmd_name: other.to_string(), path, args })
