@@ -1,7 +1,7 @@
 use crate::command::Command;
 use std::env::set_current_dir;
 use std::fmt;
-use std::path::Path;
+use std::path::PathBuf;
 
 pub struct Cd {
     pub path: String,
@@ -13,7 +13,14 @@ impl Command for Cd {
     }
 
     fn run(&self) {
-        let path = Path::new(&self.path);
+        let path = if self.path == "~" {
+            match std::env::var("HOME") {
+                Ok(home) => PathBuf::from(home),
+                Err(_) => return,
+            }
+        } else {
+            PathBuf::from(&self.path)
+        };
         if let Err(..) = set_current_dir(path) {
             eprintln!("cd: {}: No such file or directory", self.path);
         }
