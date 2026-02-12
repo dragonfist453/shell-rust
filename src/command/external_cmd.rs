@@ -13,7 +13,6 @@ impl Command for ExternalCmd {
     }
 
     fn run(&self) {
-        println!("{}", self.args);
         let result = process::Command::new(&self.path)
             .args(self.args.split_whitespace())
             .status();
