@@ -38,7 +38,7 @@ pub fn parse(input: &str) -> Box<dyn Command> {
             name: String::new(),
         });
     }
-    let args = shell_words::join(&parts[1..]);
+    let args = parts[1..].join(" ");
     match parts[0].as_str() {
         "echo" => Box::new(echo::Echo { text: args }),
         "type" => Box::new(type_cmd::TypeCmd { args }),
