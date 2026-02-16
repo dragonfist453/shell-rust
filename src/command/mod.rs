@@ -32,13 +32,13 @@ pub fn find_in_path(arg: &str) -> Option<String> {
 }
 
 pub fn parse(input: &str) -> Box<dyn Command> {
-    let parts = shell_words::split(input).unwrap_or_default();
+    let parts = shell_words::split(input.trim()).unwrap_or_default();
     if parts.is_empty() {
         return Box::new(unknown::Unknown {
             name: String::new(),
         });
     }
-    let args = shell_words::join(&parts);
+    let args = shell_words::join(&parts[1..]);
     match parts[0].as_str() {
         "echo" => Box::new(echo::Echo { text: args }),
         "type" => Box::new(type_cmd::TypeCmd { args }),
